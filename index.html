@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ethic & Workplace Adaptation Master Engine - Akper Teungku Fakinah</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-blue: #1A365D;
+            --accent-teal: #319795;
+            --gold-accent: #D69E2E;
+        }
+        body { background-color: #F7FAFC; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .hero-header { background: linear-gradient(135deg, #1A365D 0%, #2B6CB0 100%); color: white; }
+        .card-custom { border-left: 4px solid var(--accent-teal); box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
+        .hidden-section { display: none !important; }
+        .vignette-box { background-color: #EDF2F7; border-left: 4px solid #319795; padding: 15px; margin-bottom: 15px; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <!-- Header / Navbar -->
+    <header class="hero-header py-6 px-8 shadow-md mb-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold tracking-wide">ETHIC & WORKPLACE ADAPTATION MASTER ENGINE</h1>
+                <p class="text-teal-300 text-sm mt-1">International Nursing Professional Upgrading Program — Akper Teungku Fakinah & BP3MI (2026)</p>
+            </div>
+            <div class="mt-4 md:mt-0 text-right">
+                <span id="userBadge" class="bg-teal-700 text-white text-xs px-3 py-1.5 rounded-full font-semibold hidden-section">Sesi Aktif: Tamu</span>
+                <button onclick="promptOperatorLogin()" class="ml-2 bg-amber-600 hover:bg-amber-700 text-white text-xs px-3 py-1.5 rounded-full font-semibold transition">Panel Operator 🔒</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4">
+
+        <!-- 1. REGISTRASI PESERTA -->
+        <section id="regSection" class="bg-white rounded-xl p-8 shadow-lg card-custom mb-8">
+            <h2 class="text-xl font-bold text-slate-800 mb-4">Registrasi Peserta Pelatihan & Asesmen</h2>
+            <p class="text-slate-600 text-sm mb-6">Masukkan nama lengkap dan ID unik (Nomor STR / NIK) Anda untuk mengakses Pre-Test dan Post-Test modul etika dan adaptasi kerja.</p>
+            <form id="regForm" onsubmit="registerUser(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Nama Lengkap & Gelar</label>
+                    <input type="text" id="takerName" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Contoh: Giyono Asfarrasyid, S.Kep., Ns.">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">ID Unik / Nomor STR / NIK</label>
+                    <input type="text" id="takerId" required class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none" placeholder="Contoh: 19920815/STR-99823">
+                </div>
+                <button type="submit" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-semibold py-3 rounded-lg transition duration-200">Mulai Masuk Sistem Asesmen</button>
+            </form>
+        </section>
+
+        <!-- 2. DASHBOARD UTAMA PEMILIHAN TES -->
+        <section id="dashboardSection" class="hidden-section space-y-6">
+            <div class="bg-white rounded-xl p-6 shadow-md flex justify-between items-center">
+                <div>
+                    <h3 id="welcomeText" class="text-lg font-bold text-slate-800">Selamat Datang, </h3>
+                    <p class="text-xs text-slate-500" id="sessionInfo">ID Terdaftar: -</p>
+                </div>
+                <div>
+                    <span id="globalStatus" class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full">Pre-Test Belum Selesai</span>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Pre Test Card -->
+                <div class="bg-white rounded-xl p-6 shadow-md border-t-4 border-blue-600 flex flex-col justify-between">
+                    <div>
+                        <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Tahap 1</span>
+                        <h4 class="text-xl font-bold text-slate-800 mt-1">Pre-Test Etika & Adaptasi (50 Soal)</h4>
+                        <p class="text-sm text-slate-600 mt-2">Mengukur pemahaman awal filosofi etika kerja, deontology, utilitarianisme, dan manajemen dilema profesional.</p>
+                    </div>
+                    <div class="mt-6">
+                        <button id="btnPreTest" onclick="startTest('pre')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 rounded-lg transition">Kerjakan Pre-Test (50 Soal)</button>
+                        <span id="preTestStatus" class="block text-center text-xs text-slate-500 mt-2">Status: Belum Dikerjakan</span>
+                    </div>
+                </div>
+
+                <!-- Post Test Card -->
+                <div class="bg-white rounded-xl p-6 shadow-md border-t-4 border-teal-600 flex flex-col justify-between opacity-75" id="postTestCardContainer">
+                    <div>
+                        <span class="text-xs font-bold text-teal-600 uppercase tracking-wider">Tahap 2 (Terkunci)</span>
+                        <h4 class="text-xl font-bold text-slate-800 mt-1">Post-Test Komprehensif (100 Soal)</h4>
+                        <p class="text-sm text-slate-600 mt-2">Evaluasi akhir mendalam dengan 100 soal vignette studi kasus klinis keperawatan dan komunikasi SBAR lintas departemen. <strong class="text-red-600">Syarat: Pre-Test wajib diselesaikan.</strong></p>
+                    </div>
+                    <div class="mt-6">
+                        <button id="btnPostTest" onclick="startTest('post')" disabled class="w-full bg-slate-300 text-slate-500 font-semibold py-2.5 rounded-lg cursor-not-allowed transition">Kerjakan Post-Test (100 Soal)</button>
+                        <span id="postTestStatus" class="block text-center text-xs text-red-500 mt-2">Terkunci: Selesaikan Pre-Test Terlebih Dahulu</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. INTERFACE PENGERJAAN TES (QUIZ ENGINE) -->
+        <section id="quizSection" class="hidden-section bg-white rounded-xl p-8 shadow-lg">
+            <div class="flex justify-between items-center border-b pb-4 mb-6">
+                <div>
+                    <h3 id="quizTitle" class="text-xl font-bold text-slate-800">Judul Tes</h3>
+                    <p class="text-xs text-slate-500">Soal <span id="currentNum">1</span> dari <span id="totalNum">50</span></p>
+                </div>
+                <div class="bg-teal-50 text-teal-800 px-4 py-1.5 rounded-full text-sm font-semibold">
+                    Waktu Sisa: <span id="timerDisplay">60:00</span>
+                </div>
+            </div>
+
+            <div id="questionContainer" class="space-y-6">
+                <div id="vignetteBox" class="vignette-box text-sm text-slate-700 leading-relaxed"></div>
+                <div id="questionText" class="text-base font-semibold text-slate-900"></div>
+                <div id="optionsContainer" class="space-y-3"></div>
+            </div>
+
+            <div class="flex justify-between items-center mt-8 pt-4 border-t">
+                <button onclick="prevQuestion()" id="prevBtn" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-5 py-2 rounded-lg font-medium transition">Sebelumnya</button>
+                <button onclick="nextQuestion()" id="nextBtn" class="bg-teal-700 hover:bg-teal-800 text-white px-6 py-2 rounded-lg font-medium transition">Selanjutnya</button>
+            </div>
+        </section>
+
+        <!-- 4. HALAMAN RINGKASAN HASIL UNTUK PESERTA -->
+        <section id="resultSection" class="hidden-section bg-white rounded-xl p-8 shadow-lg space-y-6 text-center">
+            <div class="border-b pb-6">
+                <h3 class="text-2xl font-bold text-slate-800">Hasil Evaluasi Asesmen Diterima</h3>
+                <p class="text-sm text-slate-500 mt-1">Jawaban Anda telah berhasil diproses oleh sistem.</p>
+                <div class="mt-6 inline-block bg-teal-50 border border-teal-200 px-8 py-4 rounded-xl">
+                    <span class="text-sm text-slate-600 block">Skor Akhir Anda</span>
+                    <span id="finalScoreDisplay" class="text-5xl font-extrabold text-teal-700">0.00</span>
+                </div>
+            </div>
+            <p class="text-xs text-slate-500 italic">Analisis rasional jawaban dan evaluasi kompetensi etika tersimpan secara aman dalam sistem manajemen operator.</p>
+            <div class="pt-4">
+                <button onclick="returnToDashboard()" class="bg-slate-800 hover:bg-slate-900 text-white px-8 py-3 rounded-lg font-semibold transition">Kembali ke Dashboard Utama</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 5. PANEL OPERATOR MODAL (TERPROTEKSI PASSWORD: Fakinah_1) -->
+    <div id="operatorModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden-section z-50">
+        <div class="bg-white rounded-xl p-6 max-w-4xl w-full mx-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-xl font-bold text-slate-800">Panel Kontrol & Manajemen Operator 🔒</h3>
+                <button onclick="closeOperatorModal()" class="text-slate-400 hover:text-slate-600 font-bold text-2xl">&times;</button>
+            </div>
+
+            <div class="space-y-6">
+                <!-- Kontrol Sesi & Override -->
+                <div class="bg-slate-50 p-4 rounded-lg border space-y-3">
+                    <h4 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Aksi Manajemen Sesi</h4>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="operatorResetPreTest()" class="bg-red-600 hover:bg-red-700 text-white text-xs px-4 py-2 rounded-lg font-semibold transition">Reset Status Pre-Test</button>
+                        <button onclick="operatorUnlockPostTest()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-4 py-2 rounded-lg font-semibold transition">Buka Kunci Post-Test (Bypass)</button>
+                    </div>
+                </div>
+
+                <!-- Grafik Statistik Analisis -->
+                <div class="bg-white p-4 rounded-lg border">
+                    <h4 class="text-sm font-bold text-slate-800 mb-3">Grafik Perbandingan Perolehan Nilai Peserta</h4>
+                    <div class="max-w-md mx-auto">
+                        <canvas id="operatorChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Peninjauan Rasional & Kunci Jawaban -->
+                <div class="bg-white p-4 rounded-lg border">
+                    <h4 class="text-sm font-bold text-slate-800 mb-3">Peninjauan Rasional & Analisis Butir Soal Sesi Aktif</h4>
+                    <div id="operatorRationalContainer" class="space-y-4 max-h-96 overflow-y-auto pr-2 border-t pt-3">
+                        <p class="text-xs text-slate-400 italic">Belum ada tes yang diselesaikan dalam sesi aktif ini.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 text-right border-t pt-3">
+                <button onclick="closeOperatorModal()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs px-5 py-2.5 rounded-lg font-semibold">Tutup Panel Operator</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Logika Aplikasi & Bank Soal Independen -->
+    <script>
+        let currentUser = { name: "", id: "" };
+        let currentTestType = "";
+        let currentQuestionIndex = 0;
+        let userAnswers = {};
+        let testProgress = { preCompleted: false, preScore: 0, postScore: 0 };
+        let timerInterval;
+        let timeLeft = 0;
+        let chartInstance = null;
+
+        // GENERATOR BANK SOAL PRE-TEST (50 Soal Independen & Spesifik)
+        const preTestQuestions = generatePreTestBank();
+        // GENERATOR BANK SOAL POST-TEST (100 Soal Independen & Kompleks)
+        const postTestQuestions = generatePostTestBank();
+
+        function registerUser(e) {
+            e.preventDefault();
+            const name = document.getElementById('takerName').value.trim();
+            const id = document.getElementById('takerId').value.trim();
+            if(!name || !id) return alert("Harap isi nama dan ID dengan lengkap.");
+            
+            currentUser.name = name;
+            currentUser.id = id;
+
+            document.getElementById('userBadge').innerText = `Peserta: ${name} (${id})`;
+            document.getElementById('userBadge').classList.remove('hidden-section');
+            document.getElementById('welcomeText').innerText = `Selamat Datang, ${name}`;
+            document.getElementById('sessionInfo').innerText = `ID Unik / STR: ${id}`;
+
+            document.getElementById('regSection').classList.add('hidden-section');
+            document.getElementById('dashboardSection').classList.remove('hidden-section');
+        }
+
+        function promptOperatorLogin() {
+            const pwd = prompt("Masukkan Kata Sandi Operator:");
+            if (pwd === "Fakinah_1") {
+                openOperatorModal();
+            } else if (pwd !== null) {
+                alert("Kata sandi salah! Akses Panel Operator ditolak.");
+            }
+        }
+
+        function openOperatorModal() {
+            document.getElementById('operatorModal').classList.remove('hidden-section');
+            renderOperatorChart();
+            renderOperatorRationals();
+        }
+
+        function closeOperatorModal() {
+            document.getElementById('operatorModal').classList.add('hidden-section');
+        }
+
+        function operatorResetPreTest() {
+            testProgress
